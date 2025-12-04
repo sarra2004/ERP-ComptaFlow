@@ -1,5 +1,5 @@
 from datetime import datetime
-from . import db
+from config import db
 
 class CompteComptable(db.Model):
     __tablename__ = "compte_comptable"
