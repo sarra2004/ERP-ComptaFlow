@@ -1,22 +1,16 @@
-from flask import Flask, request, jsonify
-from models import db, CompteComptable, JournalComptable, Ecriture, LigneEcriture
+from flask import Blueprint, request, jsonify
+from config import db
+from models.ecriture_models import Ecriture, JournalComptable, LigneEcriture
+from models.account import CompteComptable  # you only IMPORT it
+
 from datetime import datetime
 
-app = Flask(__name__)
+ecriture_bp = Blueprint("ecriture_bp", __name__, url_prefix="/ecritures")
 
-# Database configuration
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///compta.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
-
-# --------------------------
+# --------------------------------------------------------
 # API 1 : Create an écriture
-# --------------------------
-@app.route("/ecritures", methods=["POST"])
+# --------------------------------------------------------
+@ecriture_bp.route("/", methods=["POST"])
 def create_ecriture():
     data = request.json
 
@@ -31,10 +25,11 @@ def create_ecriture():
 
     return jsonify({"message": "Écriture créée", "id": e.id})
 
-# -------------------------------------------------
-# API 2 : Add a line to an écriture (debit/credit)
-# -------------------------------------------------
-@app.route("/ecritures/<int:id>/lignes", methods=["POST"])
+
+# --------------------------------------------------------
+# API 2 : Add a line to an écriture
+# --------------------------------------------------------
+@ecriture_bp.route("/<int:id>/lignes", methods=["POST"])
 def add_ligne(id):
     data = request.json
 
@@ -50,10 +45,11 @@ def add_ligne(id):
 
     return jsonify({"message": "Ligne ajoutée"})
 
-# ------------------------------------------
-# API 3 : Get all écritures with their lines
-# ------------------------------------------
-@app.route("/ecritures", methods=["GET"])
+
+# --------------------------------------------------------
+# API 3 : List all écritures
+# --------------------------------------------------------
+@ecriture_bp.route("/", methods=["GET"])
 def list_ecritures():
     ecritures = Ecriture.query.all()
     result = []
@@ -66,7 +62,7 @@ def list_ecritures():
             "journal": e.journal.intitule if e.journal else None,
             "lignes": [
                 {
-                    "compte": l.compte.numero,
+                    "compte": l.compte.numero if l.compte else None,
                     "debit": l.debit,
                     "credit": l.credit
                 }
@@ -76,10 +72,11 @@ def list_ecritures():
 
     return jsonify(result)
 
-# -------------------------
+
+# --------------------------------------------------------
 # API 4 : Delete an écriture
-# -------------------------
-@app.route("/ecritures/<int:id>", methods=["DELETE"])
+# --------------------------------------------------------
+@ecriture_bp.route("/<int:id>", methods=["DELETE"])
 def delete_ecriture(id):
     e = Ecriture.query.get(id)
 
@@ -90,9 +87,3 @@ def delete_ecriture(id):
     db.session.commit()
 
     return jsonify({"message": "Écriture supprimée"})
-
-# --------------------------
-# Launch server
-# --------------------------
-if __name__ == "__main__":
-    app.run(debug=True)
