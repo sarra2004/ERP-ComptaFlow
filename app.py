@@ -15,6 +15,10 @@ def create_app():
         
         db.create_all()  # créer les tables si elles n'existent pas
 
+    # Import and register routes
+    from APIs.account_routes import account_bp
+    app.register_blueprint(account_bp)
+
     return app
 
 
