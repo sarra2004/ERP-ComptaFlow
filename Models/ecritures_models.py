@@ -23,7 +23,7 @@ class Ecriture(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_ecriture = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     libelle = db.Column(db.String(200), nullable=False)
-
+    validated = db.Column(db.Boolean, default=False) #champ de validation pour la fonctionnalmité de cloture
     id_journal = db.Column(db.Integer, db.ForeignKey('journal_comptable.id'))
     journal = db.relationship("JournalComptable", backref="ecritures")
 
