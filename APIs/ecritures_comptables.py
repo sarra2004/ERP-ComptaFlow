@@ -171,3 +171,28 @@ def validate_ecriture(id):
         "debit": total_debit,
         "credit": total_credit
     })
+# --------------------------------------------------------
+# API 5 : Valider une écriture (cloture)
+# --------------------------------------------------------
+@ecriture_bp.route("/<int:id>/validate", methods=["POST"])
+def validate_ecriture(id):
+    e = Ecriture.query.get(id)
+    
+    if not e:
+        return jsonify({"error": "Écriture non trouvée"}), 404
+    
+    # Vérifier l'équilibre débit/crédit
+    total_debit = sum(l.debit for l in e.lignes)
+    total_credit = sum(l.credit for l in e.lignes)
+    
+    if abs(total_debit - total_credit) > 0.01:
+        return jsonify({
+            "error": "Écriture non équilibrée",
+            "debit": total_debit,
+            "credit": total_credit
+        }), 400
+    
+    e.validated = True
+    db.session.commit()
+    
+    return jsonify({"message": "Écriture validée"})
