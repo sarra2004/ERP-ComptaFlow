@@ -10,8 +10,8 @@ def create_app():
     with app.app_context():
 
         # Import models
-        from models.account import CompteComptable
-        from models.ecriture_models import Ecriture, JournalComptable, LigneEcriture
+        from Models.account import CompteComptable
+        from Models.ecritures_models import Ecriture, JournalComptable, LigneEcriture
 
         db.create_all()
 
@@ -19,7 +19,7 @@ def create_app():
     # Register group Blueprints
     # -----------------------------
     from APIs.account_routes import account_bp
-    from APIs.ecriture_routes import ecriture_bp
+    from APIs.ecritures_comptables import ecriture_bp
 
     app.register_blueprint(account_bp)
     app.register_blueprint(ecriture_bp)
