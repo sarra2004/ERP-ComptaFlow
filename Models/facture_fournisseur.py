@@ -1,16 +1,23 @@
-from config import db
+from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Boolean
+from sqlalchemy.orm import relationship
+from datetime import date
+from config import Base
 
-class FactureFournisseur(db.Model):
-    __tablename__ = "factures_fournisseur"
+class FactureFournisseur(Base):
+    __tablename__ = "factures_fournisseurs"
 
-    id = db.Column(db.Integer, primary_key=True)
-    fournisseur_id = db.Column(db.Integer, db.ForeignKey("fournisseurs.id"))
-    invoice_number = db.Column(db.String(100))
-    date_facture = db.Column(db.Date)
-    date_echeance = db.Column(db.Date)
-    total_ht = db.Column(db.Numeric)
-    total_tva = db.Column(db.Numeric)
-    total_ttc = db.Column(db.Numeric)
-    statut = db.Column(db.String(50), default="DRAFT")
+    id = Column(Integer, primary_key=True, index=True)
+    numero_facture = Column(String(100), nullable=False, unique=True)
+    date_facture = Column(Date, nullable=False, default=date.today)
+    date_echeance = Column(Date)
+    montant_ht = Column(Float, nullable=False)
+    montant_ttc = Column(Float, nullable=False)
+    taxe = Column(Float, default=0)
+    etat = Column(String(50), default="EN_ATTENTE")  
+    rapprochement_ok = Column(Boolean, default=False)
 
-    lignes = db.relationship("LigneFactureFournisseur", backref="facture", lazy=True)
+    fournisseur_id = Column(Integer, ForeignKey("fournisseurs.id"), nullable=False)
+
+    fournisseur = relationship("Fournisseur", back_populates="factures")
+    lignes = relationship("LigneFactureFournisseur", back_populates="facture", cascade="all, delete-orphan")
+    paiements = relationship("PaiementFournisseur", back_populates="facture")
