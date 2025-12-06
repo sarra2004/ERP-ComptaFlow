@@ -1,7 +1,6 @@
 from flask import Flask
 from config import db, Config
-from models.accounting_period import AccountingPeriod
-from accounting_routes import accounting_bp
+from Models.accounting_period import AccountingPeriod
 
 def create_app():
     app = Flask(__name__)
@@ -26,14 +25,14 @@ def create_app():
     # -----------------------------
     from APIs.account_routes import account_bp
     from APIs.ecritures_comptables import ecriture_bp
-    from accounting_routes import accounting_bp 
+    from APIs.accounting_routes import accounting_bp 
     from APIs.fournisseur_routes import fournisseur_bp
     from APIs.facture_fournisseur_routes import facture_bp
 
     app.register_blueprint(account_bp)
     app.register_blueprint(ecriture_bp)
     app.register_blueprint(accounting_bp) 
-       app.register_blueprint(fournisseur_bp)          
+    app.register_blueprint(fournisseur_bp)          
     app.register_blueprint(facture_bp) 
 
     return app
