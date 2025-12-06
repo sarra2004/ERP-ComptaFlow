@@ -1,21 +1,12 @@
 from flask import Blueprint, request, jsonify
-from models.account import CompteComptable
+from Models.account import CompteComptable
 from config import db
 
 account_bp = Blueprint("account_bp", __name__)
 
-
-# ---------------------------------------------
-# Helper : vérifier si un compte est utilisé 
-# (Placeholder, toujours False pour toi)
-# ---------------------------------------------
 def account_is_used(account_id):
     return False
 
-
-# -------------------------------------------------
-# API 1 : CREATE ACCOUNT (POST /accounts)
-# -------------------------------------------------
 @account_bp.route("/accounts", methods=["POST"])
 def create_account():
     data = request.json
@@ -46,10 +37,6 @@ def create_account():
 
     return jsonify({"message": "Account created", "id": acc.id}), 201
 
-
-# -------------------------------------------------
-# API 2 : UPDATE ACCOUNT
-# -------------------------------------------------
 @account_bp.route("/accounts/<int:id>", methods=["PUT"])
 def update_account(id):
     data = request.json
@@ -80,10 +67,6 @@ def update_account(id):
 
     return jsonify({"message": "Account updated"})
 
-
-# -------------------------------------------------
-# API 3 : DISABLE ACCOUNT
-# -------------------------------------------------
 @account_bp.route("/accounts/<int:id>/disable", methods=["PATCH"])
 def disable_account(id):
     acc = Account.query.get(id)
@@ -96,10 +79,6 @@ def disable_account(id):
 
     return jsonify({"message": "Account disabled"}), 200
 
-
-# -------------------------------------------------
-# API 4 : DELETE ACCOUNT
-# -------------------------------------------------
 @account_bp.route("/accounts/<int:id>", methods=["DELETE"])
 def delete_account(id):
     acc = Account.query.get(id)
@@ -117,10 +96,6 @@ def delete_account(id):
 
     return jsonify({"message": "Account deleted"})
 
-
-# -------------------------------------------------
-# API 5 : GET ACCOUNTS
-# -------------------------------------------------
 @account_bp.route("/accounts", methods=["GET"])
 def list_accounts():
     query = Account.query
