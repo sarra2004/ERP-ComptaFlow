@@ -14,6 +14,10 @@ def create_app():
         # Import models
         from Models.account import CompteComptable
         from Models.ecritures_models import Ecriture, JournalComptable, LigneEcriture
+        # Fournisseurs & Factures
+        from Models.fournisseur import Fournisseur
+        from Models.facture_fournisseur import FactureFournisseur, LigneFactureFournisseur
+        from Models.paiement_fournisseur import PaiementFournisseur
 
         db.create_all()
 
@@ -23,10 +27,14 @@ def create_app():
     from APIs.account_routes import account_bp
     from APIs.ecritures_comptables import ecriture_bp
     from accounting_routes import accounting_bp 
+    from APIs.fournisseur_routes import fournisseur_bp
+    from APIs.facture_fournisseur_routes import facture_bp
 
     app.register_blueprint(account_bp)
     app.register_blueprint(ecriture_bp)
     app.register_blueprint(accounting_bp) 
+       app.register_blueprint(fournisseur_bp)          
+    app.register_blueprint(facture_bp) 
 
     return app
 
