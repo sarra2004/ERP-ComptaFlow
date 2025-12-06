@@ -22,10 +22,10 @@ def create_account():
     if not str(data["class"]).isdigit() or not (1 <= int(data["class"]) <= 8):
         return jsonify({"error": "Class must be between 1 and 8"}), 400
 
-    if Account.query.filter_by(number=data["number"]).first():
+    if CompteComptable.query.filter_by(number=data["number"]).first():
         return jsonify({"error": "Account number already exists"}), 409
 
-    acc = Account(
+    acc = CompteComptable(
         number=data["number"],
         label=data["label"],
         class_number=int(data["class"]),
@@ -40,13 +40,13 @@ def create_account():
 @account_bp.route("/accounts/<int:id>", methods=["PUT"])
 def update_account(id):
     data = request.json
-    acc = Account.query.get(id)
+    acc = CompteComptable.query.get(id)
 
     if not acc:
         return jsonify({"error": "Account not found"}), 404
 
     if "number" in data and data["number"] != acc.number:
-        if Account.query.filter_by(number=data["number"]).first():
+        if CompteComptable.query.filter_by(number=data["number"]).first():
             return jsonify({"error": "New account number already exists"}), 409
         acc.number = data["number"]
 
@@ -69,7 +69,7 @@ def update_account(id):
 
 @account_bp.route("/accounts/<int:id>/disable", methods=["PATCH"])
 def disable_account(id):
-    acc = Account.query.get(id)
+    acc = CompteComptable.query.get(id)
 
     if not acc:
         return jsonify({"error": "Account not found"}), 404
@@ -81,7 +81,7 @@ def disable_account(id):
 
 @account_bp.route("/accounts/<int:id>", methods=["DELETE"])
 def delete_account(id):
-    acc = Account.query.get(id)
+    acc = CompteComptable.query.get(id)
 
     if not acc:
         return jsonify({"error": "Account not found"}), 404
@@ -98,7 +98,7 @@ def delete_account(id):
 
 @account_bp.route("/accounts", methods=["GET"])
 def list_accounts():
-    query = Account.query
+    query = CompteComptable.query
 
     classe = request.args.get("class")
     type_ = request.args.get("type")
