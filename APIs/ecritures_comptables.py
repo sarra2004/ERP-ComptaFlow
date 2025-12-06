@@ -57,7 +57,7 @@ def create_ecriture():
         date_ecriture=datetime.strptime(date_str, "%Y-%m-%d"),
         libelle=data["libelle"],
         id_journal=data["id_journal"],
-        validated=False  # NOUVEAU : écriture non validée par défaut
+        validated=False  #  écriture non validée par défaut
     )
     
     db.session.add(e)
@@ -115,7 +115,7 @@ def list_ecritures():
 
 
 # --------------------------------------------------------
-# API 4 : Delete an écriture (MODIFIÉE)
+# API 4 : Delete an écriture 
 # --------------------------------------------------------
 @ecriture_bp.route("/<int:id>", methods=["DELETE"])
 def delete_ecriture(id):
@@ -138,7 +138,7 @@ def delete_ecriture(id):
 
 
 # --------------------------------------------------------
-# API 5 : Valider une écriture (NOUVELLE API)
+# API 5 : Valider une écriture 
 # --------------------------------------------------------
 @ecriture_bp.route("/<int:id>/validate", methods=["POST"])
 def validate_ecriture(id):
