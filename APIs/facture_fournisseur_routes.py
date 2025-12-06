@@ -63,24 +63,36 @@ def add_ligne(id):
 # -------------------------------------------------------
 # 3. VALIDATION FACTURE (contrôles automatiques)
 # -------------------------------------------------------
-@facture_bp.route("/factures/<int:id>/valider", methods=["PUT"])
-def valider_facture(id):
+@facture_bp.route('/factures/<int:id>/validate', methods=['POST'])
+def validate_facture(id):
     facture = FactureFournisseur.query.get_or_404(id)
 
-    # Vérifier que les lignes existent
-    if len(facture.lignes) == 0:
-        return jsonify({"error": "La facture doit contenir au moins une ligne"}), 400
+    # 1. Vérifier qu'il y a des lignes
+    if not facture.lignes or len(facture.lignes) == 0:
+        return jsonify({"error": "Aucune ligne de facture"}), 400
 
-    # Vérifier montant cohérent = somme lignes ?
-    total_lignes = sum(l.montant_total for l in facture.lignes)
-    if round(total_lignes, 2) != round(facture.montant_ttc, 2):
-        return jsonify({"error": "Montant TTC incohérent avec les lignes"}), 400
+    # 2. Recalcul automatique du HT et TVA
+    total_ht = sum([l.quantite * l.prix_unitaire for l in facture.lignes])
+    total_tva = sum([(l.quantite * l.prix_unitaire) * (l.tva / 100) for l in facture.lignes])
 
-    # Mettre à jour état
+    # Mise à jour de la facture
+    facture.montant_ht = total_ht
+    facture.taxe = total_tva
+    facture.montant_ttc = total_ht + total_tva
+
+    # 3. Changer l’état
     facture.etat = "VALIDEE"
+
     db.session.commit()
 
-    return jsonify({"message": "Facture validée"})
+    return jsonify({
+        "message": "Facture validée avec succès",
+        "facture_id": facture.id,
+        "montant_ht": facture.montant_ht,
+        "montant_tva": facture.taxe,
+        "montant_ttc": facture.montant_ttc
+    }), 200
+
 
 
 # -------------------------------------------------------
